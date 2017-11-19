@@ -1,3 +1,6 @@
+/**
+ * Reads user input from the console and calls the main function
+ */
 process.stdin.resume();
 process.stdin.setEncoding('ascii');
 
@@ -16,6 +19,13 @@ process.stdin.on('end', function () {
     main();
 });
 
+/**
+ * Returns empty board
+ * 
+ * @method generateBoard
+ * @param {Integer} number
+ * @return {Array}  
+ */
 function generateBoard(number) {
     let board = [];
 
@@ -30,10 +40,25 @@ function generateBoard(number) {
     return board;
 }
 
+/**
+ * Return random number from 0 to given number - 1
+ * 
+ * @method generateRandomNumber
+ * @param {Integer} number
+ * @return {Integer} 
+ */
 function generateRandomNumber(number) {
     return Math.round(Math.random() * (number - 1) + 0);
 }
 
+/**
+ * Places queens by the number of conflicts it finds from the previous queens
+ * 
+ * @method placeQueens
+ * @param {Array} board 
+ * @param {Integer} number
+ * @return {Array} 
+ */
 function placeQueens(board, number) {
     for (let j = 0; j < number; j++) {
         var conflicts = [];
@@ -57,6 +82,14 @@ function placeQueens(board, number) {
     return board;
 }
 
+/**
+ * Places the queens randomly on a row (each queen is in different column)
+ * 
+ * @method placeQueensRandomly
+ * @param {Array} board 
+ * @param {Integer} number
+ * @return {Array} 
+ */
 function placeQueensRandomly(board, number) {
     for (let i = 0; i < number; i++) {
         let pos = generateRandomNumber(number);
@@ -67,6 +100,14 @@ function placeQueensRandomly(board, number) {
     return board;
 }
 
+/**
+ * Finds the number of horizontal conflicts for a given queen
+ * 
+ * @method findHorizontalConflicts
+ * @param {Object} position 
+ * @param {Array} board
+ * @return {Integer} 
+ */
 function findHorizontalConflicts(position, board) {
     let count = 0;
 
@@ -83,6 +124,14 @@ function findHorizontalConflicts(position, board) {
     return count;
 }
 
+/**
+ * Finds the number of vertical conflicts for a given queen
+ * 
+ * @method findVerticalConflicts
+ * @param {Object} position 
+ * @param {Array} board
+ * @return {Integer} 
+ */
 function findVerticalConflicts(position, board) {
     let count = 0;
 
@@ -97,6 +146,16 @@ function findVerticalConflicts(position, board) {
     return count;
 }
 
+/**
+ * Finds the diagonal conflicts for a given queen by given direction of the diagonal
+ * 
+ * @method findDiagonalConflictsRecursion
+ * @param {Object} position 
+ * @param {Array} board 
+ * @param {Integer} incrementXBy 
+ * @param {Integer} incrementYBy 
+ * @return {Integer}
+ */
 function findDiagonalConflictsRecursion(position, board, incrementXBy, incrementYBy) {
     var newX = position.x + incrementXBy;
     var newY = position.y + incrementYBy;
@@ -113,6 +172,14 @@ function findDiagonalConflictsRecursion(position, board, incrementXBy, increment
     return conflicts;
 }
 
+/**
+ * Finds the number of conflicts by diagonal for a given queen
+ * 
+ * @method findDiagonalConflicts
+ * @param {Object} position 
+ * @param {Array} board
+ * @return {Integer} 
+ */
 function findDiagonalConflicts(position, board) {
     var conflicts = findDiagonalConflictsRecursion(position, board, 1, 1) + 
                     findDiagonalConflictsRecursion(position, board, 1, -1) + 
@@ -122,6 +189,15 @@ function findDiagonalConflicts(position, board) {
     return conflicts;
 }
 
+/**
+ * Finds the number of conflicts for a given queen -
+ * conflicts by horizontal, by vertical and by diagonal 
+ * 
+ * @method findConflictsForQueen
+ * @param {Object} queenPos 
+ * @param {Array} board
+ * @return {Integer} 
+ */
 function findConflictsForQueen(queenPos, board) {
     let countOfConflicts = 0;
 
@@ -132,6 +208,13 @@ function findConflictsForQueen(queenPos, board) {
     return countOfConflicts;
 }
 
+/**
+ * Finds all queens which have the biggest number of conflicts on the board
+ * 
+ * @method findQueensWithMostConflicts
+ * @param {Array} board 
+ * @return {Array}
+ */
 function findQueensWithMostConflicts(board) {
     let conflictsNumArray = [];
     
@@ -148,10 +231,26 @@ function findQueensWithMostConflicts(board) {
     return conflictsNumArray.filter(el => (el[0].conflicts === mostConflicts && mostConflicts > 0));
 }
 
+/**
+ * Deep cloning of array
+ * 
+ * @method clone
+ * @param {Array} arr
+ * @return {Array} 
+ */
 function clone(arr) {
     return JSON.parse(JSON.stringify(arr));
 }
 
+/**
+ * Swaps two elements on the board
+ * 
+ * @method swapElements
+ * @param {Array} board 
+ * @param {Object} queen 
+ * @param {Object} newPosition 
+ * @return {Array}
+ */
 function swapElements(board, queen, newPosition) {
     let currentBoard = clone(board);
     let oldPosition = queen[1];
@@ -163,6 +262,15 @@ function swapElements(board, queen, newPosition) {
     return currentBoard;
 }
 
+/**
+ * Finds a better place for the queens with most conflicts (chooses one queen randomly) 
+ * 
+ * @method findBetterPlace 
+ * @param {Array} board 
+ * @param {Integer} number 
+ * @param {Object || Array} queens 
+ * @return {Array}
+ */
 function findBetterPlace(board, number, queens) {
     let conflicts = [];
     let queen;
@@ -196,6 +304,16 @@ function findBetterPlace(board, number, queens) {
     return swapElements(board, queen, newPosition[1]);
 }
 
+
+/**
+ * Tries to find a solution for 3*N iterations - finds a queen with most
+ * conflicts and then finds a better position for this queen
+ * 
+ * @method findSolution
+ * @param {Array} board 
+ * @param {Integer} number
+ * @return {Array || Boolean} 
+ */
 function findSolution(board, number) {
     for (let i = 0; i < 3 * number; i++) {
         let queens = findQueensWithMostConflicts(board);
@@ -210,6 +328,13 @@ function findSolution(board, number) {
     return false;
 }
 
+/**
+ * Main method - creates empty board, puts queens randomly, finds solution
+ * 
+ * @method main
+ * @param {Integer} data
+ * @return {Array} 
+ */
 function main(data) {
     const number = data;
     let board = generateBoard(number);
@@ -223,5 +348,3 @@ function main(data) {
         return result;
     }
 }
-
-// main(number);
